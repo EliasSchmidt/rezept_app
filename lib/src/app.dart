@@ -1,11 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:rezept_app/src/recipe/recipe_list_view.dart';
+import 'package:rezept_app/src/recipe/recipe_view.dart';
+import 'package:rezept_app/src/recipe/recipe_item.dart';
 
-import 'sample_feature/sample_item_details_view.dart';
-import 'sample_feature/sample_item_list_view.dart';
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
+
+final Recipe RECIEPE = Recipe(
+      title: 'Spagetti Carbonara',
+      shortDescription: 'Nudeln mit Ei und Parmesan',
+      imageUri: 'assets/images/spaghetti-carbonara.webp',
+      ingredients: [
+        Ingredient(name: 'Nudeln', amount: '200', unit: 'g'),
+        Ingredient(name: 'Ei', amount: '1', unit: 'kg'),
+        Ingredient(name: 'Parmesan', amount: '200', unit: 'g'),
+      ],
+      description: """Die Pasta in reichlich Salzwasser bissfest kochen. Den Schinken in Würfel schneiden und in wenig Butter anbraten.
+
+Eigelb in einer großen Schüssel mit Salz, Pfeffer und Muskat verquirlen. Die Butter schaumig rühren und gut unter das Eigelb mischen. Die Schinkenwürfel und den geriebenen Käse gründlich unterrühren.
+
+Wenn die Nudeln gar sind, abgießen, sofort zu der Mischung in die Schüssel geben, nochmal alles gründlich durchmischen, dann sogleich servieren.""", 
+      );
+
+final List<Recipe> recipes = [RECIEPE, RECIEPE, RECIEPE, RECIEPE, RECIEPE, RECIEPE, RECIEPE, RECIEPE, RECIEPE,];
+
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
@@ -69,11 +89,9 @@ class MyApp extends StatelessWidget {
                 switch (routeSettings.name) {
                   case SettingsView.routeName:
                     return SettingsView(controller: settingsController);
-                  case SampleItemDetailsView.routeName:
-                    return const SampleItemDetailsView();
-                  case SampleItemListView.routeName:
+                  case RecipeListView.routeName:
                   default:
-                    return const SampleItemListView();
+                    return RecipeListView(recipes: recipes,);
                 }
               },
             );
