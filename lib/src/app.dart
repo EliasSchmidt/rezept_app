@@ -2,13 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:rezept_app/src/recipe/recipe_list_view.dart';
-import 'package:rezept_app/src/recipe/recipe_view.dart';
 import 'package:rezept_app/src/recipe/recipe_item.dart';
 
 import 'settings/settings_controller.dart';
 import 'settings/settings_view.dart';
 
-final Recipe RECIEPE = Recipe(
+final Recipe recipe = Recipe(
       title: 'Spagetti Carbonara',
       shortDescription: 'Nudeln mit Ei und Parmesan',
       imageUri: 'assets/images/spaghetti-carbonara.webp',
@@ -24,7 +23,7 @@ Eigelb in einer großen Schüssel mit Salz, Pfeffer und Muskat verquirlen. Die B
 Wenn die Nudeln gar sind, abgießen, sofort zu der Mischung in die Schüssel geben, nochmal alles gründlich durchmischen, dann sogleich servieren.""", 
       );
 
-final List<Recipe> recipes = [RECIEPE, RECIEPE, RECIEPE, RECIEPE, RECIEPE, RECIEPE, RECIEPE, RECIEPE, RECIEPE,];
+final List<Recipe> recipes = [recipe, recipe, recipe, recipe, recipe, recipe, recipe, recipe, recipe,];
 
 
 /// The Widget that configures your application.
