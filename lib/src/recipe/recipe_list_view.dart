@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:rezept_app/src/recipe/recipe_item.dart';
 import 'package:rezept_app/src/recipe/recipe_view.dart';
 
@@ -10,9 +9,13 @@ class RecipeListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      child: ListView.builder(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Rezepte'),
+      ),
+      body: ListView.separated(
         itemCount: recipes.length,
+        separatorBuilder: (context, index) => const Divider(),
         itemBuilder: (context, index) {
           return RecepieListItem(recipe: recipes[index]);
         },
@@ -28,15 +31,21 @@ class RecepieListItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialButton(
-      onPressed: () {Navigator.push(context, MaterialPageRoute(builder: (context) => RecipeView(recipe: recipe,)));},
-      child: SizedBox(
-        height: 80,
-        child: Row(
-          children: [
-            Ink.image(image: Image.asset(recipe.imageUri).image, height: 80, width: 80),
-            Text(recipe.title),
-          ],
-        ),
+      onPressed: () {
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => RecipeView(
+                      recipe: recipe,
+                    )));
+      },
+      child: Row(
+        children: [
+          Ink.image(
+              image: Image.asset(recipe.imageUri).image, height: 80, width: 80),
+          const SizedBox(width: 10),
+          Text(recipe.title),
+        ],
       ),
     );
   }
