@@ -16,9 +16,8 @@ class RecipeView extends StatelessWidget {
         children: [
           Image.asset(recipe.imageUri, fit: BoxFit.cover),
           Text(recipe.shortDescription),
-          IngredientsView(ingredients: recipe.ingredients,),
+          //IngredientsView(ingredients: recipe.ingredients,),
           Text(recipe.description),
-                    
         ],
       ),
     );
@@ -29,8 +28,8 @@ class IngredientsView extends StatelessWidget {
   final List<Ingredient> ingredients;
   const IngredientsView({super.key, required this.ingredients});
 
-  buildIngredients() => ingredients.map((e) => IngredientView(ingredient: e)).toList();
-
+  buildIngredients() =>
+      ingredients.map((e) => IngredientView(ingredient: e)).toList();
 
   @override
   Widget build(BuildContext context) {
@@ -54,13 +53,19 @@ class _IngredientViewState extends State<IngredientView> {
   Widget build(BuildContext context) {
     return Row(
       children: [
-        Checkbox(value: isChecked, onChanged: (bool? v) => {setState(() {
-          isChecked = v!;
-        })},),
-        Text('${widget.ingredient.amount}${widget.ingredient.unit} ${widget.ingredient.name}',
-         style: isChecked 
-          ? const TextStyle(decoration: TextDecoration.lineThrough) 
-          : const TextStyle()), 
+        Checkbox(
+          value: isChecked,
+          onChanged: (bool? v) => {
+            setState(() {
+              isChecked = v!;
+            })
+          },
+        ),
+        Text(
+            '${widget.ingredient.amount}${widget.ingredient.unit} ${widget.ingredient.name}',
+            style: isChecked
+                ? const TextStyle(decoration: TextDecoration.lineThrough)
+                : const TextStyle()),
       ],
     );
   }
