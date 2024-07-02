@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:rezept_app/src/database/models/ingredient.dart';
+import 'package:rezept_app/src/database/models/recipe.dart';
 
-import 'recipe_item.dart';
 
 class RecipeView extends StatelessWidget {
   final Recipe recipe;

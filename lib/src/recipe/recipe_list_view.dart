@@ -1,25 +1,48 @@
 import 'package:flutter/material.dart';
-import 'package:rezept_app/src/recipe/recipe_item.dart';
+import 'package:isar/isar.dart';
+import 'package:rezept_app/src/database/models/recipe.dart';
 import 'package:rezept_app/src/recipe/recipe_view.dart';
 
 class RecipeListView extends StatelessWidget {
-  final List<Recipe> recipes;
   static const String routeName = '/RecipeListView';
-  const RecipeListView({super.key, required this.recipes});
+  const RecipeListView({super.key, required this.isar});
+
+  final Isar isar;
+
+  Future<List<Recipe>> loadRecipes() async {
+    return isar.recipes.where().findAll();
+  }
 
   @override
   Widget build(BuildContext context) {
+    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rezepte'),
       ),
-      body: ListView.separated(
-        itemCount: recipes.length,
-        separatorBuilder: (context, index) => const Divider(),
-        itemBuilder: (context, index) {
-          return RecepieListItem(recipe: recipes[index]);
-        },
-      ),
+      body: FutureBuilder(
+        future: loadRecipes(),
+        builder: (context, snapshot){
+          if(snapshot.connectionState == ConnectionState.done){
+            if(snapshot.hasData){
+              List<Recipe> recipes = snapshot.data as List<Recipe>;
+              return ListView.separated(
+                itemCount: recipes.length,
+                separatorBuilder: (context, index) => const Divider(),
+                itemBuilder: (context, index) {
+                  return RecepieListItem(recipe: recipes[index]);
+                }
+              );
+            }
+            else if(snapshot.hasError){
+              return Text(snapshot.error.toString());
+            }
+          }
+          return const Center(child: CircularProgressIndicator());
+          }
+        ),
+      
     );
   }
 }

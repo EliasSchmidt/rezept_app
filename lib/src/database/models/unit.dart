@@ -11,78 +11,50 @@ enum UnitPrefix {
   const UnitPrefix(this.multiplier, this.symbol);
 }
 
-abstract class Unit {
-  double get conversionFactor;
-  String get name;
+enum Unit {
+  // Volume Units
+  teaspoon(1.0, "teaspoon", UnitType.volume),
+  tablespoon(3.0, "tablespoon", UnitType.volume),
+  cup(48.0, "cup", UnitType.volume),
+  pint(96.0, "pint", UnitType.volume),
+  quart(192.0, "quart", UnitType.volume),
+  gallon(768.0, "gallon", UnitType.volume),
+  milliliter(0.202884, "milliliter", UnitType.volume),
+  liter(202.884, "liter", UnitType.volume),
 
-  double convert(double amount, Unit to,
-      {UnitPrefix fromPrefix = UnitPrefix.none,
-      UnitPrefix toPrefix = UnitPrefix.none});
-}
+  // Weight Units
+  ounce(1.0, "ounce", UnitType.weight),
+  pound(16.0, "pound", UnitType.weight),
+  gram(0.035274, "gram", UnitType.weight),
+  kilogram(35.274, "kilogram", UnitType.weight);
 
-enum VolumeUnit implements Unit {
-  teaspoon(1.0, "teaspoon"),
-  tablespoon(3.0, "tablespoon"),
-  cup(48.0, "cup"),
-  pint(96.0, "pint"),
-  quart(192.0, "quart"),
-  gallon(768.0, "gallon"),
-  milliliter(0.202884, "milliliter"),
-  liter(202.884, "liter");
-
-  @override
   final double conversionFactor;
   final String unitName;
+  final UnitType unitType;
 
-  const VolumeUnit(this.conversionFactor, this.unitName);
+  const Unit(this.conversionFactor, this.unitName, this.unitType);
 
-  @override
   double convert(double amount, Unit to,
       {UnitPrefix fromPrefix = UnitPrefix.none,
       UnitPrefix toPrefix = UnitPrefix.none}) {
-    if (to is VolumeUnit) {
-      if (this == to) {
-        return amount * fromPrefix.multiplier / toPrefix.multiplier;
-      }
-      double amountInTeaspoons =
-          amount * conversionFactor * fromPrefix.multiplier;
-      return amountInTeaspoons / to.conversionFactor / toPrefix.multiplier;
+    if (unitType != to.unitType) {
+      throw ArgumentError(
+          'Conversion from $unitType to ${to.unitType} is not supported.');
     }
-    throw ArgumentError(
-        'Conversion from VolumeUnit to ${to.runtimeType} is not supported.');
+
+    if (this == to) {
+      return amount * fromPrefix.multiplier / toPrefix.multiplier;
+    }
+
+    double amountInBaseUnit =
+        amount * conversionFactor * fromPrefix.multiplier;
+    return amountInBaseUnit / to.conversionFactor / toPrefix.multiplier;
   }
 
-  @override
   String get name => unitName;
 }
 
-enum WeightUnit implements Unit {
-  ounce(1.0, "ounce"),
-  pound(16.0, "pound"),
-  gram(0.035274, "gram"),
-  kilogram(35.274, "kilogram");
-
-  @override
-  final double conversionFactor;
-  final String unitName;
-
-  const WeightUnit(this.conversionFactor, this.unitName);
-
-  @override
-  double convert(double amount, Unit to,
-      {UnitPrefix fromPrefix = UnitPrefix.none,
-      UnitPrefix toPrefix = UnitPrefix.none}) {
-    if (to is WeightUnit) {
-      if (this == to) {
-        return amount * fromPrefix.multiplier / toPrefix.multiplier;
-      }
-      double amountInOunces = amount * conversionFactor * fromPrefix.multiplier;
-      return amountInOunces / to.conversionFactor / toPrefix.multiplier;
-    }
-    throw ArgumentError(
-        'Conversion from WeightUnit to ${to.runtimeType} is not supported.');
-  }
-
-  @override
-  String get name => unitName;
+enum UnitType {
+  volume,
+  weight;
 }
