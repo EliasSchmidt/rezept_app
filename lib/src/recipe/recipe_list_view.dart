@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:rezept_app/src/database/models/recipe.dart';
+import 'package:rezept_app/src/recipe/new_recipe_view.dart';
 import 'package:rezept_app/src/recipe/recipe_view.dart';
 
 class RecipeListView extends StatelessWidget {
@@ -20,6 +21,11 @@ class RecipeListView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Rezepte'),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => Navigator.push(context, MaterialPageRoute(
+          builder: (context) =>  NewRecipeView(isar: isar))),
+        child: const Icon(Icons.add),
       ),
       body: FutureBuilder(
         future: loadRecipes(),
