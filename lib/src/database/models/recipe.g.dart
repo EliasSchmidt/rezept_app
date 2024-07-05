@@ -90,11 +90,13 @@ Recipe _recipeDeserialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  final object = Recipe();
-  object.description = reader.readString(offsets[0]);
-  object.imageUri = reader.readString(offsets[1]);
-  object.shortDescription = reader.readString(offsets[2]);
-  object.title = reader.readString(offsets[3]);
+  final object = Recipe(
+    description: reader.readString(offsets[0]),
+    imageUri: reader.readStringOrNull(offsets[1]) ??
+        'assets/images/spaghetti-carbonara.webp',
+    shortDescription: reader.readString(offsets[2]),
+    title: reader.readString(offsets[3]),
+  );
   return object;
 }
 
@@ -108,7 +110,8 @@ P _recipeDeserializeProp<P>(
     case 0:
       return (reader.readString(offset)) as P;
     case 1:
-      return (reader.readString(offset)) as P;
+      return (reader.readStringOrNull(offset) ??
+          'assets/images/spaghetti-carbonara.webp') as P;
     case 2:
       return (reader.readString(offset)) as P;
     case 3:

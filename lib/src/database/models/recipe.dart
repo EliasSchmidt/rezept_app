@@ -11,4 +11,6 @@ class Recipe {
   late String imageUri;
   late String description;
   final ingredients = IsarLinks<Ingredient>();
+
+  Recipe({required this.title, required this.shortDescription, this.imageUri = 'assets/images/spaghetti-carbonara.webp', required this.description});
 }

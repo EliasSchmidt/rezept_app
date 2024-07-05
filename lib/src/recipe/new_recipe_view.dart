@@ -1,12 +1,40 @@
 import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:rezept_app/src/database/models/ingredient.dart';
+import 'package:rezept_app/src/database/models/recipe.dart';
 
-class NewRecipeView extends StatelessWidget {
-  NewRecipeView({super.key, required this.isar});
+class NewRecipeView extends StatefulWidget {
+  const NewRecipeView({super.key, required this.isar});
   final Isar isar;
+
+  @override
+  State<NewRecipeView> createState() => _NewRecipeViewState();
+}
+
+class _NewRecipeViewState extends State<NewRecipeView> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
+  String? _name;
+  String? _shortDescription;
+  String? _description;
+  String? _imageUri;
+
+  void _saveRecipe() async {
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      Recipe newRecipe = Recipe(
+        description: _description!,
+        shortDescription: _shortDescription!,
+        title: _name!,
+      );
+
+      if (_imageUri != null) {
+        newRecipe.imageUri = _imageUri!;
+      }
+
+      await widget.isar.writeTxn<int>(() => widget.isar.recipes.put(newRecipe));
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -18,47 +46,75 @@ class NewRecipeView extends StatelessWidget {
         autovalidateMode: AutovalidateMode.onUserInteraction,
         key: _formKey,
         child: Column(
-          children: [ 
-            const TextField(
-          decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Name',
-          ),
-          maxLength: 24,
-          ),
-          const TextField(
-           decoration: InputDecoration(
-             border: OutlineInputBorder(),
-             labelText: 'Kurzbeschreibung',
-           ),
-           maxLines: 2,
-           maxLength: 48,),
-           FutureBuilder(
-             future: isar.ingredients.where().findAll(),
-             builder: (context, snapshot) {
-               if(snapshot.connectionState == ConnectionState.done){
-                 if(snapshot.hasData){
-                   List<Ingredient> ingredients = snapshot.data as List<Ingredient>;
-                   return Expanded(child: CustomAutoComplete(options: ingredients.map((e) => e.name).toList()));
-                 }
-                 else if(snapshot.hasError){
-                   return Text(snapshot.error.toString());
-                 }
-               }
-               return const CircularProgressIndicator();
-             }
-           ),
-           ElevatedButton(onPressed: () {
-            if (_formKey.currentState!.validate()) {
-                  isar.txn(callback: (isar) async {
-                    Ingredient ingredient = Ingredient();
-                    ingredient.name = _formKey.currentState!.fields['name']?.value as String;
-                    ingredient.description = _formKey.currentState!.fields['description']?.value as String;
-                    ingredient.ingredients = _formKey.currentState!.fields['ingredients']?.value as String;
-                    await isar.ingredients.put(ingredient);
-                  })
-                }}, child: const Text('Hinzufügen'),)
-           ],
+          children: [
+            TextFormField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Name',
+              ),
+              maxLength: 24,
+              onSaved: (newValue) => _name = newValue,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Bitte geben Sie den Namen des Rezepts ein';
+                }
+                return null;
+              },
+            ),
+            TextFormField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Kurzbeschreibung',
+              ),
+              maxLines: 2,
+              maxLength: 48,
+              onSaved: (newValue) => _shortDescription = newValue,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Bitte geben Sie eine Kurzbeschreibung des Rezepts(Spaghetti Carbonara: Spagetti mit Schinken, Ei und Parmesan) ein';
+                }
+                return null;
+              },
+            ),
+            FutureBuilder(
+                future: widget.isar.ingredients.where().findAll(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    if (snapshot.hasData) {
+                      List<Ingredient> ingredients =
+                          snapshot.data as List<Ingredient>;
+                      return Expanded(
+                          child: CustomAutoComplete(
+                              options:
+                                  ingredients.map((e) => e.name).toList()));
+                    } else if (snapshot.hasError) {
+                      return Text(snapshot.error.toString());
+                    }
+                  }
+                  return const CircularProgressIndicator();
+                }),
+            TextFormField(
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                labelText: 'Beschreibung',
+              ),
+              onSaved: (newValue) => _description = newValue,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Bitte geben Sie den Rezepttext ein';
+                }
+                return null;
+              },
+            ),
+            ElevatedButton(
+              onPressed: () {
+                if (_formKey.currentState!.validate()) {
+                  _saveRecipe();
+                }
+              },
+              child: const Text('Hinzufügen'),
+            )
+          ],
         ),
       ),
     );
@@ -80,7 +136,8 @@ class CustomAutoComplete extends StatelessWidget {
           return option.contains(textEditingValue.text.toLowerCase());
         });
       },
-      fieldViewBuilder: (context, textEditingController, focusNode, onFieldSubmitted) {
+      fieldViewBuilder:
+          (context, textEditingController, focusNode, onFieldSubmitted) {
         return TextField(
           controller: textEditingController,
           focusNode: focusNode,
@@ -93,4 +150,3 @@ class CustomAutoComplete extends StatelessWidget {
     );
   }
 }
-
