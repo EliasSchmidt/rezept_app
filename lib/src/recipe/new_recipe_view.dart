@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:isar/isar.dart';
 import 'package:rezept_app/src/database/models/ingredient.dart';
 import 'package:rezept_app/src/database/models/recipe.dart';
+import 'package:rezept_app/src/recipe/add_ingredient.dart';
 
 class NewRecipeView extends StatefulWidget {
   const NewRecipeView({super.key, required this.isar});
@@ -84,8 +85,8 @@ class _NewRecipeViewState extends State<NewRecipeView> {
                       List<Ingredient> ingredients =
                           snapshot.data as List<Ingredient>;
                       return Expanded(
-                          child: CustomAutoComplete(
-                              options:
+                          child: AddIngredient(
+                              savedIngredients:
                                   ingredients.map((e) => e.name).toList()));
                     } else if (snapshot.hasError) {
                       return Text(snapshot.error.toString());
@@ -121,32 +122,4 @@ class _NewRecipeViewState extends State<NewRecipeView> {
   }
 }
 
-class CustomAutoComplete extends StatelessWidget {
-  const CustomAutoComplete({super.key, required this.options});
-  final List<String> options;
 
-  @override
-  Widget build(BuildContext context) {
-    return Autocomplete<String>(
-      optionsBuilder: (TextEditingValue textEditingValue) {
-        if (textEditingValue.text == '') {
-          return const Iterable<String>.empty();
-        }
-        return options.where((String option) {
-          return option.contains(textEditingValue.text.toLowerCase());
-        });
-      },
-      fieldViewBuilder:
-          (context, textEditingController, focusNode, onFieldSubmitted) {
-        return TextField(
-          controller: textEditingController,
-          focusNode: focusNode,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'Zutat',
-          ),
-        );
-      },
-    );
-  }
-}

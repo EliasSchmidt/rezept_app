@@ -10,7 +10,7 @@ class Recipe {
   late String shortDescription;
   late String imageUri;
   late String description;
-  final ingredients = IsarLinks<Ingredient>();
+  final ingredients = IsarLinks<IngredientWithAmount>();
 
   Recipe({required this.title, required this.shortDescription, this.imageUri = 'assets/images/spaghetti-carbonara.webp', required this.description});
 }

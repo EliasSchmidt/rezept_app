@@ -48,7 +48,7 @@ const RecipeSchema = CollectionSchema(
     r'ingredients': LinkSchema(
       id: 1239099599733727184,
       name: r'ingredients',
-      target: r'Ingredient',
+      target: r'IngredientWithAmount',
       single: false,
     )
   },
@@ -130,8 +130,8 @@ List<IsarLinkBase<dynamic>> _recipeGetLinks(Recipe object) {
 }
 
 void _recipeAttach(IsarCollection<dynamic> col, Id id, Recipe object) {
-  object.ingredients
-      .attach(col, col.isar.collection<Ingredient>(), r'ingredients', id);
+  object.ingredients.attach(
+      col, col.isar.collection<IngredientWithAmount>(), r'ingredients', id);
 }
 
 extension RecipeQueryWhereSort on QueryBuilder<Recipe, Recipe, QWhere> {
@@ -791,7 +791,7 @@ extension RecipeQueryObject on QueryBuilder<Recipe, Recipe, QFilterCondition> {}
 
 extension RecipeQueryLinks on QueryBuilder<Recipe, Recipe, QFilterCondition> {
   QueryBuilder<Recipe, Recipe, QAfterFilterCondition> ingredients(
-      FilterQuery<Ingredient> q) {
+      FilterQuery<IngredientWithAmount> q) {
     return QueryBuilder.apply(this, (query) {
       return query.link(q, r'ingredients');
     });

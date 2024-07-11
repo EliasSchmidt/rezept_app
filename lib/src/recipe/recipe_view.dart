@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
 import 'package:rezept_app/src/database/models/ingredient.dart';
 import 'package:rezept_app/src/database/models/recipe.dart';
 
@@ -17,7 +18,7 @@ class RecipeView extends StatelessWidget {
         children: [
           Image.asset(recipe.imageUri, fit: BoxFit.cover),
           Text(recipe.shortDescription),
-          //IngredientsView(ingredients: recipe.ingredients,),
+          IngredientsView(isarLinks: recipe.ingredients,),
           Text(recipe.description),
         ],
       ),
@@ -26,22 +27,33 @@ class RecipeView extends StatelessWidget {
 }
 
 class IngredientsView extends StatelessWidget {
-  final List<Ingredient> ingredients;
-  const IngredientsView({super.key, required this.ingredients});
+  final IsarLinks<IngredientWithAmount> isarLinks;
+  const IngredientsView({super.key, required this.isarLinks});
 
-  buildIngredients() =>
+  buildIngredients(List<IngredientWithAmount> ingredients) =>
       ingredients.map((e) => IngredientView(ingredient: e)).toList();
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: buildIngredients(),
+    return FutureBuilder(
+      future: isarLinks.load(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        else if(snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+        return Column(
+          children: buildIngredients(snapshot.data),
+        );
+      }
     );
   }
 }
 
 class IngredientView extends StatefulWidget {
-  final Ingredient ingredient;
+  final IngredientWithAmount ingredient;
   const IngredientView({super.key, required this.ingredient});
 
   @override
@@ -52,22 +64,33 @@ class _IngredientViewState extends State<IngredientView> {
   bool isChecked = false;
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Checkbox(
-          value: isChecked,
-          onChanged: (bool? v) => {
-            setState(() {
-              isChecked = v!;
-            })
-          },
-        ),
-        Text(
-            '${widget.ingredient.amount}${widget.ingredient.unit} ${widget.ingredient.name}',
-            style: isChecked
-                ? const TextStyle(decoration: TextDecoration.lineThrough)
-                : const TextStyle()),
-      ],
+    return FutureBuilder(
+      future: widget.ingredient.ingredient.load(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        else if(snapshot.hasError) {
+          return Text('${snapshot.error}');
+        }
+        return Row(
+          children: [
+            Checkbox(
+              value: isChecked,
+              onChanged: (bool? v) => {
+                setState(() {
+                  isChecked = v!;
+                })
+              },
+            ),
+            Text(
+                '${widget.ingredient.amount}${widget.ingredient.unit} ${widget.ingredient.ingredient}',
+                style: isChecked
+                    ? const TextStyle(decoration: TextDecoration.lineThrough)
+                    : const TextStyle()),
+          ],
+        );
+      }
     );
   }
 }
